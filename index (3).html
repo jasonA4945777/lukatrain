@@ -1,0 +1,463 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LUKA BLUEPRINT — 訓練藍圖</title>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;900&family=Noto+Sans+TC:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C8A84B;
+    --gold-light: #E8C96A;
+    --dark: #0A0A0F;
+    --dark3: #1A1A25;
+    --panel: #13131E;
+    --border: rgba(200,168,75,0.2);
+    --text: #E8E8F0;
+    --muted: #888899;
+    --accent-blue: #3A7BD5;
+    --green: #3AD58A;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--dark); color: var(--text); font-family: 'Noto Sans TC', sans-serif; min-height: 100vh; overflow-x: hidden; }
+
+  .hero { position: relative; padding: 52px 24px 28px; text-align: center; overflow: hidden; }
+  .hero::before { content: '77'; position: absolute; font-family: 'Barlow Condensed', sans-serif; font-size: 300px; font-weight: 900; color: rgba(200,168,75,0.04); top: 50%; left: 50%; transform: translate(-50%,-45%); pointer-events: none; letter-spacing: -20px; }
+  .hero-badge { display: inline-block; font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 4px; color: var(--gold); border: 1px solid var(--border); padding: 5px 14px; margin-bottom: 14px; text-transform: uppercase; }
+  .hero h1 { font-family: 'Barlow Condensed', sans-serif; font-size: clamp(48px,14vw,90px); font-weight: 900; line-height: 0.9; text-transform: uppercase; letter-spacing: -2px; }
+  .hero h1 span { display: block; background: linear-gradient(135deg,var(--gold) 0%,var(--gold-light) 50%,#fff 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+  .hero-sub { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; color: var(--muted); letter-spacing: 6px; margin-top: 8px; text-transform: uppercase; }
+  .hero-divider { width: 50px; height: 2px; background: var(--gold); margin: 18px auto; }
+
+  .date-bar { background: var(--panel); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 14px 20px; display: flex; justify-content: space-between; align-items: center; }
+  .date-today { font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 700; color: var(--gold); }
+  .date-label { font-size: 10px; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; margin-top: 2px; }
+  .week-num { font-family: 'Barlow Condensed', sans-serif; font-size: 30px; font-weight: 900; color: var(--gold); line-height: 1; text-align: right; }
+  .week-label { font-size: 10px; color: var(--muted); letter-spacing: 1.5px; text-transform: uppercase; text-align: right; }
+
+  .today-banner { margin: 10px 16px; padding: 14px 16px; border: 1px solid var(--gold); background: rgba(200,168,75,0.06); display: flex; align-items: center; gap: 12px; }
+  .today-banner.rest { border-color: var(--border); background: transparent; }
+  .today-icon { font-size: 24px; }
+  .today-title { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 900; text-transform: uppercase; color: var(--gold); }
+  .today-banner.rest .today-title { color: var(--muted); }
+  .today-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .stats-strip { display: grid; grid-template-columns: repeat(3,1fr); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); margin: 10px 0 0; }
+  .stat-item { padding: 14px 10px; text-align: center; border-right: 1px solid var(--border); }
+  .stat-item:last-child { border-right: none; }
+  .stat-num { font-family: 'Barlow Condensed', sans-serif; font-size: 28px; font-weight: 900; color: var(--gold); line-height: 1; }
+  .stat-label { font-size: 10px; color: var(--muted); letter-spacing: 1px; margin-top: 3px; text-transform: uppercase; }
+
+  .tab-nav { display: flex; overflow-x: auto; padding: 0 16px; gap: 4px; margin: 14px 0 18px; scrollbar-width: none; }
+  .tab-nav::-webkit-scrollbar { display: none; }
+  .tab-btn { flex-shrink: 0; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; padding: 9px 16px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; transition: all 0.2s; }
+  .tab-btn.active { background: var(--gold); color: var(--dark); border-color: var(--gold); }
+
+  .tab-panel { display: none; padding: 0 16px 90px; }
+  .tab-panel.active { display: block; }
+
+  .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; margin-top: 6px; }
+  .section-num { font-family: 'Barlow Condensed', sans-serif; font-size: 11px; font-weight: 700; color: var(--gold); letter-spacing: 2px; }
+  .section-title { font-family: 'Barlow Condensed', sans-serif; font-size: 20px; font-weight: 900; text-transform: uppercase; }
+  .section-line { flex: 1; height: 1px; background: var(--border); }
+
+  .skill-card { background: var(--panel); border: 1px solid var(--border); margin-bottom: 8px; overflow: hidden; }
+  .skill-card-header { display: flex; align-items: center; padding: 13px 14px; gap: 12px; cursor: pointer; user-select: none; }
+  .skill-icon { width: 34px; height: 34px; background: rgba(200,168,75,0.1); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+  .skill-meta { flex: 1; }
+  .skill-name { font-family: 'Barlow Condensed', sans-serif; font-size: 16px; font-weight: 700; text-transform: uppercase; }
+  .skill-tag { font-size: 10px; color: var(--gold); letter-spacing: 1.5px; margin-top: 2px; }
+  .skill-chevron { font-size: 11px; color: var(--muted); transition: transform 0.3s; }
+  .skill-card.open .skill-chevron { transform: rotate(180deg); }
+  .skill-body { display: none; padding: 0 14px 12px; border-top: 1px solid var(--border); }
+  .skill-card.open .skill-body { display: block; }
+
+  .drill-item { display: flex; gap: 10px; padding: 9px 0; border-bottom: 1px solid rgba(200,168,75,0.07); }
+  .drill-item:last-child { border-bottom: none; }
+  .drill-num { font-family: 'Barlow Condensed', sans-serif; font-size: 19px; font-weight: 900; color: rgba(200,168,75,0.25); min-width: 22px; line-height: 1; padding-top: 2px; }
+  .drill-content { flex: 1; }
+  .drill-name { font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+  .drill-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+  .drill-tags { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 6px; }
+  .drill-tag { font-size: 10px; padding: 2px 7px; border: 1px solid var(--border); color: var(--muted); letter-spacing: 1px; text-transform: uppercase; }
+  .drill-tag.gold { border-color: var(--gold); color: var(--gold); }
+
+  .day-card { background: var(--panel); border: 1px solid var(--border); margin-bottom: 14px; }
+  .day-header { display: flex; align-items: center; padding: 12px 16px; background: rgba(200,168,75,0.05); border-bottom: 1px solid var(--border); }
+  .day-label { font-family: 'Barlow Condensed', sans-serif; font-size: 18px; font-weight: 900; text-transform: uppercase; color: var(--gold); }
+  .day-focus { font-size: 11px; color: var(--muted); letter-spacing: 1px; margin-top: 2px; }
+  .day-badge { margin-left: auto; font-size: 10px; padding: 3px 9px; background: rgba(200,168,75,0.1); border: 1px solid var(--border); color: var(--gold); letter-spacing: 1px; text-transform: uppercase; }
+  .exercise-row { display: grid; grid-template-columns: 1fr auto; align-items: center; padding: 9px 16px; border-bottom: 1px solid rgba(200,168,75,0.06); gap: 8px; }
+  .exercise-row:last-child { border-bottom: none; }
+  .exercise-name { font-size: 13px; font-weight: 600; }
+  .exercise-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .exercise-sets { font-family: 'Barlow Condensed', sans-serif; font-size: 14px; font-weight: 700; color: var(--gold); white-space: nowrap; }
+
+  .progress-block { margin-bottom: 13px; }
+  .progress-header { display: flex; justify-content: space-between; margin-bottom: 5px; }
+  .progress-label { font-size: 12px; }
+  .progress-val { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 700; color: var(--gold); }
+  .progress-bar { height: 3px; background: var(--dark3); }
+  .progress-fill { height: 100%; background: linear-gradient(90deg,var(--gold),var(--gold-light)); width: 0%; transition: width 1s ease; }
+
+  .week-grid { display: grid; grid-template-columns: repeat(7,1fr); gap: 3px; margin-bottom: 18px; }
+  .week-day { aspect-ratio: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 9px; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); border: 1px solid var(--border); gap: 2px; position: relative; }
+  .week-day .dot { width: 5px; height: 5px; border-radius: 50%; background: var(--border); }
+  .week-day.court { background: rgba(200,168,75,0.08); border-color: var(--gold); color: var(--gold); }
+  .week-day.court .dot { background: var(--gold); }
+  .week-day.gym { background: rgba(58,123,213,0.1); border-color: var(--accent-blue); color: var(--accent-blue); }
+  .week-day.gym .dot { background: var(--accent-blue); }
+  .week-day.today-hl { box-shadow: 0 0 0 2px #fff; }
+  .week-day.today-hl::after { content: '今'; position: absolute; top: 1px; right: 2px; font-size: 7px; color: #fff; font-weight: 700; }
+
+  /* LOG */
+  .log-date-header { font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 2px; text-transform: uppercase; padding: 10px 0 5px; border-bottom: 1px solid var(--border); margin-bottom: 6px; margin-top: 6px; }
+  .log-item { display: flex; align-items: center; gap: 12px; padding: 11px 14px; background: var(--panel); border: 1px solid var(--border); margin-bottom: 6px; cursor: pointer; transition: border-color 0.2s; }
+  .log-item.done { border-color: var(--green); background: rgba(58,213,138,0.04); }
+  .log-check { width: 20px; height: 20px; border: 1.5px solid var(--border); flex-shrink: 0; display: flex; align-items: center; justify-content: center; border-radius: 2px; font-size: 12px; color: var(--dark); transition: all 0.2s; }
+  .log-item.done .log-check { background: var(--green); border-color: var(--green); }
+  .log-title { font-size: 13px; font-weight: 600; }
+  .log-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+  .log-item.done .log-title { color: var(--green); }
+
+  .check-item { display: flex; align-items: flex-start; gap: 10px; padding: 9px 0; border-bottom: 1px solid rgba(200,168,75,0.06); cursor: pointer; }
+  .check-item:last-child { border-bottom: none; }
+  .check-box { width: 18px; height: 18px; border: 1.5px solid var(--border); flex-shrink: 0; margin-top: 1px; display: flex; align-items: center; justify-content: center; border-radius: 2px; transition: all 0.2s; }
+  .check-item.checked .check-box { background: var(--gold); border-color: var(--gold); }
+  .check-item.checked .check-box::after { content: '✓'; font-size: 11px; color: var(--dark); font-weight: 700; }
+  .check-text { font-size: 13px; line-height: 1.5; transition: color 0.2s; }
+  .check-item.checked .check-text { color: var(--muted); text-decoration: line-through; }
+
+  .quote-block { border-left: 3px solid var(--gold); padding: 12px 14px; background: rgba(200,168,75,0.04); margin: 14px 0; }
+  .quote-text { font-size: 13px; font-style: italic; line-height: 1.7; }
+  .quote-source { font-size: 10px; color: var(--gold); letter-spacing: 2px; margin-top: 6px; text-transform: uppercase; }
+
+  .phase-badge { display: inline-flex; align-items: center; gap: 7px; font-family: 'Barlow Condensed', sans-serif; font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--gold); border: 1px solid var(--border); padding: 5px 10px; margin-bottom: 12px; }
+  .phase-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gold); }
+
+  .luka-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+  .luka-stat { background: var(--panel); border: 1px solid var(--border); padding: 12px; }
+  .luka-val { font-family: 'Barlow Condensed', sans-serif; font-size: 30px; font-weight: 900; color: var(--gold); line-height: 1; }
+  .luka-label { font-size: 10px; color: var(--muted); letter-spacing: 1px; margin-top: 3px; text-transform: uppercase; }
+
+  .setup-box { background: var(--panel); border: 1px solid var(--border); padding: 14px; margin-bottom: 14px; }
+  .setup-label { font-size: 12px; color: var(--muted); margin-bottom: 8px; }
+  .setup-row { display: flex; gap: 8px; }
+  .setup-input { flex: 1; background: var(--dark); border: 1px solid var(--border); color: var(--text); padding: 8px 10px; font-size: 13px; font-family: 'Noto Sans TC', sans-serif; }
+  .setup-btn { background: var(--gold); color: var(--dark); border: none; padding: 8px 14px; font-family: 'Barlow Condensed', sans-serif; font-size: 13px; font-weight: 700; letter-spacing: 1px; cursor: pointer; }
+  .setup-note { font-size: 11px; color: var(--muted); margin-top: 6px; }
+
+  .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10,10,15,0.96); backdrop-filter: blur(12px); border-top: 1px solid var(--border); display: flex; padding: 6px 0 env(safe-area-inset-bottom,8px); z-index: 100; }
+  .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 7px 4px; background: none; border: none; cursor: pointer; color: var(--muted); font-family: 'Barlow Condensed', sans-serif; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; transition: color 0.2s; }
+  .nav-btn .nav-icon { font-size: 18px; }
+  .nav-btn.active { color: var(--gold); }
+
+  @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+  .tab-panel.active > * { animation: fadeUp 0.3s ease forwards; }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <div class="hero-badge">🏀 技術分析師計劃</div>
+  <h1><span>LUKA</span>BLUEPRINT</h1>
+  <div class="hero-sub">Dončić 風格訓練藍圖</div>
+  <div class="hero-divider"></div>
+</div>
+
+<div class="date-bar">
+  <div>
+    <div class="date-today" id="today-date">—</div>
+    <div class="date-label" id="today-weekday">載入中</div>
+  </div>
+  <div>
+    <div class="week-num" id="week-num">—</div>
+    <div class="week-label">訓練週數</div>
+  </div>
+</div>
+
+<div class="today-banner" id="today-banner">
+  <div class="today-icon" id="today-icon">⏳</div>
+  <div>
+    <div class="today-title" id="today-title">載入中</div>
+    <div class="today-desc" id="today-desc"></div>
+  </div>
+</div>
+
+<div class="stats-strip">
+  <div class="stat-item"><div class="stat-num">8</div><div class="stat-label">週計劃</div></div>
+  <div class="stat-item"><div class="stat-num" id="log-count">0</div><div class="stat-label">已完成訓練</div></div>
+  <div class="stat-item"><div class="stat-num">3</div><div class="stat-label">核心技能</div></div>
+</div>
+
+<div class="tab-nav">
+  <button class="tab-btn active" onclick="switchTab('overview')">總覽</button>
+  <button class="tab-btn" onclick="switchTab('log')">日誌</button>
+  <button class="tab-btn" onclick="switchTab('skills')">技術</button>
+  <button class="tab-btn" onclick="switchTab('gym')">健身</button>
+  <button class="tab-btn" onclick="switchTab('schedule')">排程</button>
+</div>
+
+<!-- 總覽 -->
+<div class="tab-panel active" id="tab-overview">
+  <div class="setup-box">
+    <div class="setup-label">📅 設定訓練開始日期（計算週數用）</div>
+    <div class="setup-row">
+      <input type="date" class="setup-input" id="start-date-input">
+      <button class="setup-btn" onclick="saveStartDate()">儲存</button>
+    </div>
+    <div class="setup-note" id="start-date-note">尚未設定開始日期</div>
+  </div>
+  <div class="phase-badge"><div class="phase-dot"></div>Phase 1 — 基礎建立 (Week 1–4)</div>
+  <div class="quote-block">
+    <div class="quote-text">「籃球是讀懂對手、讀懂空間的遊戲。步伐只是工具，時機才是藝術。」</div>
+    <div class="quote-source">— Luka Dončić 訓練哲學</div>
+  </div>
+  <div class="section-header"><div class="section-num">01</div><div class="section-title">Luka 核心數據</div><div class="section-line"></div></div>
+  <div class="luka-grid">
+    <div class="luka-stat"><div class="luka-val">28.4</div><div class="luka-label">得分/場</div></div>
+    <div class="luka-stat"><div class="luka-val">38.2%</div><div class="luka-label">三分命中率</div></div>
+    <div class="luka-stat"><div class="luka-val">8.3</div><div class="luka-label">助攻/場</div></div>
+    <div class="luka-stat"><div class="luka-val">#1</div><div class="luka-label">歐洲步使用率</div></div>
+  </div>
+  <div class="section-header"><div class="section-num">02</div><div class="section-title">能力評估</div><div class="section-line"></div></div>
+  <div class="progress-block"><div class="progress-header"><span class="progress-label">持球運球能力</span><span class="progress-val">75%</span></div><div class="progress-bar"><div class="progress-fill" data-width="75"></div></div></div>
+  <div class="progress-block"><div class="progress-header"><span class="progress-label">步伐靈活性（歐洲步）</span><span class="progress-val">55%</span></div><div class="progress-bar"><div class="progress-fill" data-width="55"></div></div></div>
+  <div class="progress-block"><div class="progress-header"><span class="progress-label">後仰跳投穩定性</span><span class="progress-val">50%</span></div><div class="progress-bar"><div class="progress-fill" data-width="50"></div></div></div>
+  <div class="progress-block"><div class="progress-header"><span class="progress-label">下肢爆發力</span><span class="progress-val">70%</span></div><div class="progress-bar"><div class="progress-fill" data-width="70"></div></div></div>
+  <div class="progress-block"><div class="progress-header"><span class="progress-label">核心穩定性</span><span class="progress-val">60%</span></div><div class="progress-bar"><div class="progress-fill" data-width="60"></div></div></div>
+  <div class="section-header" style="margin-top:18px"><div class="section-num">03</div><div class="section-title">8週目標</div><div class="section-line"></div></div>
+  <div class="check-item" onclick="toggleGoal(this,'g1')" id="g1"><div class="check-box"></div><div class="check-text">歐洲步 左右手各熟練，能在防守下完成上籃</div></div>
+  <div class="check-item" onclick="toggleGoal(this,'g2')" id="g2"><div class="check-box"></div><div class="check-text">Stepback 三分在無防守情況下命中率達 40%+</div></div>
+  <div class="check-item" onclick="toggleGoal(this,'g3')" id="g3"><div class="check-box"></div><div class="check-text">後仰跳投在中距離穩定出手，動作流暢不失衡</div></div>
+  <div class="check-item" onclick="toggleGoal(this,'g4')" id="g4"><div class="check-box"></div><div class="check-text">下肢爆發力提升：垂直跳進步 5cm 以上</div></div>
+  <div class="check-item" onclick="toggleGoal(this,'g5')" id="g5"><div class="check-box"></div><div class="check-text">能在實戰中使出 Luka 套路（歐洲步接 and-one）</div></div>
+</div>
+
+<!-- 日誌 -->
+<div class="tab-panel" id="tab-log">
+  <div class="section-header"><div class="section-num">—</div><div class="section-title">訓練日誌</div><div class="section-line"></div></div>
+  <p style="font-size:12px;color:var(--muted);margin-bottom:14px;">點擊打勾記錄完成，資料儲存在本機瀏覽器。</p>
+  <div id="log-container"></div>
+</div>
+
+<!-- 技術 -->
+<div class="tab-panel" id="tab-skills">
+  <div class="section-header"><div class="section-num">A</div><div class="section-title">歐洲步系統</div><div class="section-line"></div></div>
+  <div class="skill-card" id="sc1">
+    <div class="skill-card-header" onclick="toggleCard('sc1')"><div class="skill-icon">👣</div><div class="skill-meta"><div class="skill-name">基礎歐洲步切入</div><div class="skill-tag">FOUNDATION · WEEK 1–2</div></div><div class="skill-chevron">▼</div></div>
+    <div class="skill-body">
+      <div class="drill-item"><div class="drill-num">1</div><div class="drill-content"><div class="drill-name">慢速分解步伐練習</div><div class="drill-desc">走路速度做左—右跨步，重點是重心轉移與落地角度，先建立肌肉記憶。</div><div class="drill-tags"><span class="drill-tag gold">每日 × 20次</span><span class="drill-tag">無防守</span></div></div></div>
+      <div class="drill-item"><div class="drill-num">2</div><div class="drill-content"><div class="drill-name">跑速切入接歐洲步上籃</div><div class="drill-desc">從三分線以運球速度切入，最後兩步完成歐洲步。先練右手切左繞，再練左手切右繞。</div><div class="drill-tags"><span class="drill-tag gold">4組 × 10次/側</span></div></div></div>
+      <div class="drill-item"><div class="drill-num">3</div><div class="drill-content"><div class="drill-name">Luka 低重心歐洲步</div><div class="drill-desc">重心極低、第一步貼地，身體幾乎貼著防守者繞過。刻意壓低重心，感受臀腿出力。</div><div class="drill-tags"><span class="drill-tag gold">每次訓練 × 15次</span></div></div></div>
+    </div>
+  </div>
+  <div class="skill-card" id="sc2">
+    <div class="skill-card-header" onclick="toggleCard('sc2')"><div class="skill-icon">⚡</div><div class="skill-meta"><div class="skill-name">對抗與製造犯規</div><div class="skill-tag">ADVANCED · WEEK 3–4</div></div><div class="skill-chevron">▼</div></div>
+    <div class="skill-body">
+      <div class="drill-item"><div class="drill-num">1</div><div class="drill-content"><div class="drill-name">接觸上籃（Contact Finish）</div><div class="drill-desc">找隊友做輕度干擾，練習在身體被碰觸時維持平衡完成上籃，主動找接觸。</div><div class="drill-tags"><span class="drill-tag gold">需要隊友</span></div></div></div>
+      <div class="drill-item"><div class="drill-num">2</div><div class="drill-content"><div class="drill-name">假動作誘防守接歐洲步</div><div class="drill-desc">投籃假動作讓防守者跳起，落地後啟動歐洲步。這是 Luka 最常用的 and-one 套路。</div><div class="drill-tags"><span class="drill-tag gold">有防守訓練</span></div></div></div>
+    </div>
+  </div>
+  <div class="section-header" style="margin-top:20px"><div class="section-num">B</div><div class="section-title">Stepback 三分系統</div><div class="section-line"></div></div>
+  <div class="skill-card" id="sc3">
+    <div class="skill-card-header" onclick="toggleCard('sc3')"><div class="skill-icon">🎯</div><div class="skill-meta"><div class="skill-name">Stepback 三分基礎</div><div class="skill-tag">FOUNDATION · WEEK 1–3</div></div><div class="skill-chevron">▼</div></div>
+    <div class="skill-body">
+      <div class="drill-item"><div class="drill-num">1</div><div class="drill-content"><div class="drill-name">原地後退步投籃</div><div class="drill-desc">站三分線內側，後退一大步後立即出手。落地要穩，出手在落地瞬間。</div><div class="drill-tags"><span class="drill-tag gold">200球/次</span><span class="drill-tag">從中距離開始</span></div></div></div>
+      <div class="drill-item"><div class="drill-num">2</div><div class="drill-content"><div class="drill-name">持球運球接 Stepback</div><div class="drill-desc">肘區運球 1–2 下，急停後 Stepback。節奏：慢—慢—快停—出手。</div><div class="drill-tags"><span class="drill-tag gold">4組 × 10次</span><span class="drill-tag">左右側各練</span></div></div></div>
+      <div class="drill-item"><div class="drill-num">3</div><div class="drill-content"><div class="drill-name">三分線定點 Stepback</div><div class="drill-desc">5個位置各投20球，記錄命中率，目標 Week 4 達到 35%+。</div><div class="drill-tags"><span class="drill-tag gold">100球/課</span></div></div></div>
+    </div>
+  </div>
+  <div class="skill-card" id="sc4">
+    <div class="skill-card-header" onclick="toggleCard('sc4')"><div class="skill-icon">🌙</div><div class="skill-meta"><div class="skill-name">後仰跳投（Fadeaway）</div><div class="skill-tag">SIGNATURE · WEEK 4–8</div></div><div class="skill-chevron">▼</div></div>
+    <div class="skill-body">
+      <div class="drill-item"><div class="drill-num">1</div><div class="drill-content"><div class="drill-name">低位後仰中距離</div><div class="drill-desc">背框轉身後仰，身體後傾 15–20 度，手腕 follow-through 充分。</div><div class="drill-tags"><span class="drill-tag gold">3組 × 10次/側</span></div></div></div>
+      <div class="drill-item"><div class="drill-num">2</div><div class="drill-content"><div class="drill-name">高位後仰三分</div><div class="drill-desc">弧頂假動作後後仰三分，需強大核心支撐。Week 6 後再加入。</div><div class="drill-tags"><span class="drill-tag gold">Week 6+</span></div></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- 健身 -->
+<div class="tab-panel" id="tab-gym">
+  <div class="day-card">
+    <div class="day-header"><div><div class="day-label">DAY A — 爆發力</div><div class="day-focus">週一 · 下肢爆發 + 臀腿</div></div><div class="day-badge">60–75 min</div></div>
+    <div class="exercise-row"><div><div class="exercise-name">🔥 熱身：動態拉伸</div><div class="exercise-sub">腿部搖擺、弓步轉體、跳繩</div></div><div class="exercise-sets">10 min</div></div>
+    <div class="exercise-row"><div><div class="exercise-name">Box Jump（跳箱）</div><div class="exercise-sub">爆發力起點・訓練快速收縮</div></div><div class="exercise-sets">4 × 6</div></div>
+    <div class="exercise-row"><div><div class="exercise-name">Bulgarian Split Squat</div><div class="exercise-sub">後腳抬高蹲・歐洲步腳力基礎</div></div><div class="exercise-sets">3 × 10/側</div></div>
+    <div class="exercise-row"><div><div class="exercise-name">Trap Bar Deadlift</div><div class="exercise-sub">後鏈爆發・可用普通硬舉替代</div></div><div class="exercise-sets">4 × 5</div></div>
+    <div class="exercise-row"><div><div class="exercise-name">Lateral Bound（側向跳）</div><div class="exercise-sub">模擬歐洲步橫移・雙腳交替</div></div><div class="exercise-sets">3 × 8/側</div></div>
+    <div class="exercise-row"><div><div class="exercise-name">Calf Raise（踮腳）</div><div class="exercise-sub">投籃起跳末端力量</div></div><div class="exercise-sets">3 × 20</div></div>
+    <div class="exercise-row"><div><div class="exercise-name">🧊 收操：靜態伸展</div><div class="exercise-sub">髖屈肌、股四頭肌、小腿</div></div><div class="exercise-sets">10 min</div></div>
+  </div>
+  <div class="day-card">
+    <div class="day-header"><div><div class="day-label">DAY B — 核心 + 上肢</div><div class="day-focus">週三 · 核心穩定 + 投籃力量</div></div><div class="day-badge">60–75 min</div></div>
+    <div class="exercise-row"><div><div class="exercise-name">🔥 熱身：肩關節啟動</div><div class="exercise-sub">彈力帶外旋、臂繞環、Y-T-W</div></div><div class="exercise-sets">8 min</div></div>
+    <div class="exercise-row"><div><div class="exercise-name">Pallof Press</div><div class="exercise-sub">核心抗旋轉・Stepback 穩定關鍵</div></div><div class="exercise-sets">3 × 12/側</div></div>
+    <div class="exercise-row"><div><div class="exercise-name">Cable Woodchop（砍柴）</div><div class="exercise-sub">對角線・模擬投籃動作鏈</div></div><div class="exercise-sets">3 × 10/側</div></div>
+    <div class="exercise-row"><div><div class="exercise-name">Dumbbell Shoulder Press</div><div class="exercise-sub">肩部推舉・增加投籃彈力</div></div><div class="exercise-sets">3 × 10</div></div>
+    <div class="exercise-row"><div><div class="exercise-name">Wrist Flexion / Extension</div><div class="exercise-sub">手腕強化・投籃 follow-through</div></div><div class="exercise-sets">3 × 20</div></div>
+    <div class="exercise-row"><div><div class="exercise-name">Ab Wheel Rollout</div><div class="exercise-sub">核心延伸穩定・後仰投籃基礎</div></div><div class="exercise-sets">3 × 10</div></div>
+    <div class="exercise-row"><div><div class="exercise-name">Side Plank + 手臂上抬</div><div class="exercise-sub">側核心穩定・維持後仰平衡</div></div><div class="exercise-sets">3 × 30秒/側</div></div>
+    <div class="exercise-row"><div><div class="exercise-name">🧊 收操：泡沫軸放鬆</div><div class="exercise-sub">背部、臀部、髂脛束</div></div><div class="exercise-sets">10 min</div></div>
+  </div>
+</div>
+
+<!-- 排程 -->
+<div class="tab-panel" id="tab-schedule">
+  <div class="section-header"><div class="section-num">—</div><div class="section-title">週訓練排程</div><div class="section-line"></div></div>
+  <div style="display:flex;gap:14px;margin-bottom:10px;font-size:11px;color:var(--muted);">
+    <span>🟡 球場</span><span>🔵 健身房</span><span>⬜ 休息</span>
+  </div>
+  <div class="week-grid">
+    <div class="week-day gym" data-day="1"><div class="dot"></div>一<div style="font-size:7px">健身</div></div>
+    <div class="week-day court" data-day="2"><div class="dot"></div>二<div style="font-size:7px">球場</div></div>
+    <div class="week-day gym" data-day="3"><div class="dot"></div>三<div style="font-size:7px">健身</div></div>
+    <div class="week-day court" data-day="4"><div class="dot"></div>四<div style="font-size:7px">球場</div></div>
+    <div class="week-day" data-day="5"><div class="dot"></div>五<div style="font-size:7px">恢復</div></div>
+    <div class="week-day" data-day="6"><div class="dot"></div>六<div style="font-size:7px">自由</div></div>
+    <div class="week-day" data-day="0"><div class="dot"></div>日<div style="font-size:7px">休息</div></div>
+  </div>
+  <div class="skill-card" id="w1" style="margin-bottom:7px"><div class="skill-card-header" onclick="toggleCard('w1')"><div class="skill-icon" style="font-size:13px">🔵</div><div class="skill-meta"><div class="skill-name">星期一 — 健身 Day A</div><div class="skill-tag">健身房 · 爆發力 · 60–75 MIN</div></div><div class="skill-chevron">▼</div></div><div class="skill-body"><div class="drill-item"><div class="drill-num">→</div><div class="drill-content"><div class="drill-name">Box Jump → Split Squat → Deadlift → Lateral Bound</div><div class="drill-desc">依 Day A 課表執行</div></div></div></div></div>
+  <div class="skill-card" id="w2" style="margin-bottom:7px"><div class="skill-card-header" onclick="toggleCard('w2')"><div class="skill-icon" style="font-size:13px">🟡</div><div class="skill-meta"><div class="skill-name">星期二 — 歐洲步技術</div><div class="skill-tag">籃球場 · 60 MIN</div></div><div class="skill-chevron">▼</div></div><div class="skill-body"><div class="drill-item"><div class="drill-num">→</div><div class="drill-content"><div class="drill-name">熱身運球 → 慢速分解 → 全速切入 → 中距離收尾</div><div class="drill-desc">左右手各練</div></div></div></div></div>
+  <div class="skill-card" id="w3" style="margin-bottom:7px"><div class="skill-card-header" onclick="toggleCard('w3')"><div class="skill-icon" style="font-size:13px">🔵</div><div class="skill-meta"><div class="skill-name">星期三 — 健身 Day B</div><div class="skill-tag">健身房 · 核心＋上肢 · 60–75 MIN</div></div><div class="skill-chevron">▼</div></div><div class="skill-body"><div class="drill-item"><div class="drill-num">→</div><div class="drill-content"><div class="drill-name">Pallof Press → Cable Woodchop → 肩推 → 手腕訓練</div><div class="drill-desc">依 Day B 課表執行</div></div></div></div></div>
+  <div class="skill-card" id="w4" style="margin-bottom:7px"><div class="skill-card-header" onclick="toggleCard('w4')"><div class="skill-icon" style="font-size:13px">🟡</div><div class="skill-meta"><div class="skill-name">星期四 — Stepback 三分＋組合技</div><div class="skill-tag">籃球場 · 75 MIN</div></div><div class="skill-chevron">▼</div></div><div class="skill-body"><div class="drill-item"><div class="drill-num">→</div><div class="drill-content"><div class="drill-name">定點熱身 → Stepback 系統 → 歐洲步接 Stepback → 1v1</div><div class="drill-desc">兩招串聯，模擬比賽節奏</div></div></div></div></div>
+  <div class="skill-card" id="w5" style="margin-bottom:7px"><div class="skill-card-header" onclick="toggleCard('w5')"><div class="skill-icon" style="font-size:13px">⬜</div><div class="skill-meta"><div class="skill-name">星期五 — 主動恢復</div><div class="skill-tag">休息日 · 輕度活動</div></div><div class="skill-chevron">▼</div></div><div class="skill-body"><div class="drill-item"><div class="drill-num">→</div><div class="drill-content"><div class="drill-name">散步 / 游泳 30 分 + 伸展 20 分</div><div class="drill-desc">髖屈肌、腿後肌、肩膀重點放鬆</div></div></div></div></div>
+  <div class="skill-card" id="w6" style="margin-bottom:7px"><div class="skill-card-header" onclick="toggleCard('w6')"><div class="skill-icon" style="font-size:13px">🎮</div><div class="skill-meta"><div class="skill-name">星期六 — 影片分析 or 自由打球</div><div class="skill-tag">彈性安排</div></div><div class="skill-chevron">▼</div></div><div class="skill-body"><div class="drill-item"><div class="drill-num">→</div><div class="drill-content"><div class="drill-name">看 Luka 影片分析步伐節奏，或輕鬆鬥牛</div><div class="drill-desc">無壓力，享受過程</div></div></div></div></div>
+  <div class="skill-card" id="w7" style="margin-bottom:24px"><div class="skill-card-header" onclick="toggleCard('w7')"><div class="skill-icon" style="font-size:13px">😴</div><div class="skill-meta"><div class="skill-name">星期日 — 完全休息</div><div class="skill-tag">恢復日</div></div><div class="skill-chevron">▼</div></div><div class="skill-body"><div class="drill-item"><div class="drill-num">→</div><div class="drill-content"><div class="drill-name">充分睡眠 7–9 小時</div><div class="drill-desc">恢復是訓練最重要的一環</div></div></div></div></div>
+</div>
+
+<div class="bottom-nav">
+  <button class="nav-btn active" id="nav-overview" onclick="switchTab('overview')"><span class="nav-icon">📋</span>總覽</button>
+  <button class="nav-btn" id="nav-log" onclick="switchTab('log')"><span class="nav-icon">✅</span>日誌</button>
+  <button class="nav-btn" id="nav-skills" onclick="switchTab('skills')"><span class="nav-icon">🏀</span>技術</button>
+  <button class="nav-btn" id="nav-gym" onclick="switchTab('gym')"><span class="nav-icon">💪</span>健身</button>
+  <button class="nav-btn" id="nav-schedule" onclick="switchTab('schedule')"><span class="nav-icon">📅</span>排程</button>
+</div>
+
+<script>
+const WD = ['日','一','二','三','四','五','六'];
+const WD_FULL = ['星期日','星期一','星期二','星期三','星期四','星期五','星期六'];
+const DAY_PLANS = {
+  1:{icon:'💪',title:'健身 Day A — 爆發力',desc:'Box Jump・Split Squat・Deadlift・Lateral Bound',type:'gym'},
+  2:{icon:'🏀',title:'球場 — 歐洲步技術',desc:'慢速分解 → 全速切入 → 中距離投籃收尾',type:'court'},
+  3:{icon:'💪',title:'健身 Day B — 核心＋上肢',desc:'Pallof Press・Cable Woodchop・肩推・手腕訓練',type:'gym'},
+  4:{icon:'🏀',title:'球場 — Stepback 三分＋組合技',desc:'定點熱身 → Stepback → 歐洲步接 Stepback → 1v1',type:'court'},
+  5:{icon:'🌿',title:'主動恢復',desc:'散步 / 游泳 30 分 + 伸展 20 分',type:'rest'},
+  6:{icon:'🎮',title:'影片分析 or 自由打球',desc:'看 Luka 影片或輕鬆鬥牛',type:'rest'},
+  0:{icon:'😴',title:'完全休息',desc:'充分睡眠 7–9 小時',type:'rest'},
+};
+
+function init(){
+  const now = new Date();
+  const dow = now.getDay();
+  document.getElementById('today-date').textContent =
+    now.getFullYear()+'/'+(now.getMonth()+1).toString().padStart(2,'0')+'/'+now.getDate().toString().padStart(2,'0');
+  document.getElementById('today-weekday').textContent = WD_FULL[dow];
+
+  // 週數
+  const s = localStorage.getItem('lukaStart');
+  if(s){
+    const diff = Math.floor((now - new Date(s))/(1000*60*60*24*7));
+    document.getElementById('week-num').textContent = 'W'+(diff+1);
+    document.getElementById('start-date-note').textContent = '開始日期：'+s;
+    document.getElementById('start-date-input').value = s;
+  }
+
+  // 今日 banner
+  const p = DAY_PLANS[dow];
+  document.getElementById('today-icon').textContent = p.icon;
+  document.getElementById('today-title').textContent = p.title;
+  document.getElementById('today-desc').textContent = p.desc;
+  if(p.type==='rest') document.getElementById('today-banner').classList.add('rest');
+
+  // 排程高亮今天
+  document.querySelectorAll('.week-day').forEach(el=>{
+    if(parseInt(el.dataset.day)===dow) el.classList.add('today-hl');
+  });
+
+  // 讀取目標狀態
+  ['g1','g2','g3','g4','g5'].forEach(id=>{
+    if(localStorage.getItem('goal_'+id)==='1'){
+      const el=document.getElementById(id);
+      if(el) el.classList.add('checked');
+    }
+  });
+
+  setTimeout(()=>{
+    document.querySelectorAll('.progress-fill').forEach(b=>{ b.style.width=b.dataset.width+'%'; });
+  },200);
+
+  buildLog();
+  updateCount();
+}
+
+function saveStartDate(){
+  const v = document.getElementById('start-date-input').value;
+  if(!v) return;
+  localStorage.setItem('lukaStart',v);
+  init();
+}
+
+function buildLog(){
+  const c = document.getElementById('log-container');
+  c.innerHTML='';
+  const now = new Date();
+  let lastDateStr='';
+  for(let i=13;i>=0;i--){
+    const d=new Date(now);
+    d.setDate(d.getDate()-i);
+    const dow=d.getDay();
+    const p=DAY_PLANS[dow];
+    if(p.type==='rest') continue;
+    const dateKey=d.toISOString().slice(0,10);
+    if(dateKey!==lastDateStr){
+      const h=document.createElement('div');
+      h.className='log-date-header';
+      h.textContent=dateKey+' '+WD_FULL[dow]+(i===0?' · 今天':'');
+      c.appendChild(h);
+      lastDateStr=dateKey;
+    }
+    const isDone=localStorage.getItem('log_'+dateKey)==='1';
+    const item=document.createElement('div');
+    item.className='log-item'+(isDone?' done':'');
+    item.innerHTML=`<div class="log-check">${isDone?'✓':''}</div><div><div class="log-title">${p.icon} ${p.title}</div><div class="log-sub">${p.desc}</div></div>`;
+    item.onclick=()=>toggleLog(item,dateKey);
+    c.appendChild(item);
+  }
+}
+
+function toggleLog(el,key){
+  const done=el.classList.toggle('done');
+  localStorage.setItem('log_'+key,done?'1':'0');
+  el.querySelector('.log-check').textContent=done?'✓':'';
+  updateCount();
+}
+
+function updateCount(){
+  let n=0;
+  for(let k in localStorage){ if(k.startsWith('log_')&&localStorage.getItem(k)==='1') n++; }
+  document.getElementById('log-count').textContent=n;
+}
+
+function toggleGoal(el,id){
+  const c=el.classList.toggle('checked');
+  localStorage.setItem('goal_'+id,c?'1':'0');
+}
+
+function toggleCard(id){ document.getElementById(id).classList.toggle('open'); }
+
+function switchTab(name){
+  document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  document.getElementById('nav-'+name).classList.add('active');
+  const map={overview:0,log:1,skills:2,gym:3,schedule:4};
+  document.querySelectorAll('.tab-btn')[map[name]].classList.add('active');
+  if(name==='overview') setTimeout(()=>{ document.querySelectorAll('.progress-fill').forEach(b=>{ b.style.width=b.dataset.width+'%'; }); },100);
+}
+
+init();
+</script>
+</body>
+</html>
